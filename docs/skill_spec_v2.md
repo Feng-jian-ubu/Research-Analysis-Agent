@@ -264,7 +264,6 @@ Cleaner 之后的统计分析、可视化和报告生成均使用清洗后的数
   "data_path": "outputs/uploads/task_xxx/cleaned.csv",
   "params": {
     "columns": ["yield", "temperature", "fertilizer"],
-    "group_by": null,
     "include_percentiles": true
   }
 }
@@ -273,10 +272,9 @@ Cleaner 之后的统计分析、可视化和报告生成均使用清洗后的数
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `columns` | `array[string]` | 无 | 需要统计的字段 |
-| `group_by` | `string \| null` | `null` | 可选分组字段 |
 | `include_percentiles` | `boolean` | `true` | 是否返回四分位数 |
 
-数值变量返回 `count`、`missing`、`mean`、`std`、`min`、`q1`、`median`、`q3`、`max`；分类变量返回 `count`、`missing`、`unique`、`mode`、`mode_frequency`。
+数值变量返回 `count`、`mean`、`std`、`min`、`q1`、`median`、`q3`、`max`；分类变量返回 `count`、`unique`、`mode`、`mode_frequency`。
 
 #### 输出
 
@@ -287,7 +285,7 @@ Cleaner 之后的统计分析、可视化和报告生成均使用清洗后的数
       "name": "descriptive_statistics",
       "title": "描述性统计结果",
       "columns": [
-        "variable", "type", "count", "missing", "mean", "std",
+        "variable", "type", "count", "mean", "std",
         "min", "q1", "median", "q3", "max", "unique",
         "mode", "mode_frequency"
       ],
@@ -296,7 +294,6 @@ Cleaner 之后的统计分析、可视化和报告生成均使用清洗后的数
           "variable": "age",
           "type": "numeric",
           "count": 98,
-          "missing": 2,
           "mean": 20.43,
           "std": 1.76,
           "min": 18,
