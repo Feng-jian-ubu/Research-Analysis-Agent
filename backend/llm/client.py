@@ -1,4 +1,5 @@
 import os
+import sys
 from typing import Any
 
 from dotenv import load_dotenv
@@ -55,18 +56,58 @@ def chat(
     client = _get_client()
     model_name = _get_model_name()
 
-    response = client.chat.completions.create(
+    stream = client.chat.completions.create(
         model=model_name,
         messages=messages,
         temperature=temperature,
+        stream=True,
     )
 
-    content = response.choices[0].message.content
+    content_parts: list[str] = []
+
+    for chunk in stream:
+        # 部分兼容接口会返回不含 choices 的状态或用量分片。
+        if not chunk.choices:
+            continue
+
+        content = chunk.choices[0].delta.content
+        if content:
+            content_parts.append(content)
+
+    content = "".join(content_parts).strip()
 
     if not content:
         raise ValueError("大语言模型未返回有效内容。")
 
-    return content.strip()
+    return content
+
+
+def main() -> int:
+    """发送最小测试请求，检查大语言模型是否可以正常调用。"""
+    model_name = os.getenv("LLM_MODEL") or os.getenv("OPENAI_MODEL") or "未配置"
+
+    try:
+        response = chat(
+            [
+                {
+                    "role": "user",
+                    "content": "这是一次连通性测试，请只回复 OK。",
+                }
+            ]
+        )
+    except Exception as exc:
+        print(f"大语言模型调用失败：{exc}", file=sys.stderr)
+        return 1
+
+    print("大语言模型调用成功。")
+    print(f"模型：{model_name}")
+    print(f"响应：{response}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
 
 
 
