@@ -1,0 +1,34 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+.venv/
+
+# IDE and operating system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Python cache and test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node dependencies and build output
+node_modules/
+frontend/dist/
+
+# Runtime data and generated artifacts
+outputs/
+
+# Files not required by the deployed website
+tests/
+docs/
+examples/
+
+# Duplicate root-level Node manifest; frontend has its own manifest
+/package.json
+/package-lock.json
