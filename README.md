@@ -17,8 +17,6 @@
 - Markdown 分析报告生成
 - 网页端任务进度和统计结果展示
 
-> 可视化模块的接口已经接入，但 `skills/visualization/figure_generator.py` 仍需完成后才能生成真实图表。
-
 ## 运行环境
 
 - Python 3.11 或更高版本
