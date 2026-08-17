@@ -6,10 +6,17 @@ import axios from "axios";
  *
  * 1. 如果 .env 中配置了 VITE_API_BASE_URL，则使用配置值。
  * 2. 如果没有配置，则默认连接本机 FastAPI：
- *    http://localhost:8000/api
+ *    /api/v1（开发环境由 Vite 代理到 FastAPI）
  */
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000/api";
+const API_PREFIX = "/api/v1";
+const configuredApiBaseUrl = (
+  import.meta.env.VITE_API_BASE_URL ?? API_PREFIX
+).replace(/\/+$/, "");
+
+// 兼容旧版示例中的 /api 配置，避免请求落到不存在的 /api/datasets。
+const API_BASE_URL = configuredApiBaseUrl.endsWith("/api")
+  ? `${configuredApiBaseUrl}/v1`
+  : configuredApiBaseUrl;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -18,6 +25,39 @@ const apiClient = axios.create({
     Accept: "application/json",
   },
 });
+
+function normalizeRequestUrl(url, fallbackUrl) {
+  if (!url) {
+    return fallbackUrl;
+  }
+
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  if (url.startsWith(API_PREFIX)) {
+    return url.slice(API_PREFIX.length) || "/";
+  }
+
+  return url;
+}
+
+export function resolveApiUrl(url) {
+  if (!url || /^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  if (/^https?:\/\//i.test(API_BASE_URL)) {
+    const apiOrigin = new URL(API_BASE_URL).origin;
+    return url.startsWith("/")
+      ? `${apiOrigin}${url}`
+      : `${API_BASE_URL}/${url}`;
+  }
+
+  return url.startsWith("/")
+    ? url
+    : `${API_BASE_URL}/${url}`;
+}
 
 /*
  * 统一处理后端请求错误。
@@ -44,19 +84,19 @@ apiClient.interceptors.response.use(
 /*
  * 上传 CSV 或 Excel 数据文件。
  *
- * POST /api/files
+ * POST /api/v1/datasets
  *
  * 返回示例：
  * {
- *   "file_id": "file-123",
- *   "filename": "data.csv"
+ *   "dataset_id": "ds_123",
+ *   "file_name": "data.csv"
  * }
  */
 export async function uploadDataset(file) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await apiClient.post("/files", formData, {
+  const response = await apiClient.post("/datasets", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -71,7 +111,7 @@ export async function uploadDataset(file) {
 /*
  * 获取数据集画像。
  *
- * GET /api/files/{file_id}/profile
+ * GET /api/v1/datasets/{dataset_id}/profile
  *
  * 返回内容包括：
  * - 文件名称
@@ -80,9 +120,9 @@ export async function uploadDataset(file) {
  * - 字段信息
  * - 数据预览
  */
-export async function getDatasetProfile(fileId) {
+export async function getDatasetProfile(datasetId) {
   const response = await apiClient.get(
-    `/files/${encodeURIComponent(fileId)}/profile`
+    `/datasets/${encodeURIComponent(datasetId)}/profile`
   );
 
   return response.data;
@@ -91,11 +131,11 @@ export async function getDatasetProfile(fileId) {
 /*
  * 创建分析任务。
  *
- * POST /api/analysis
+ * POST /api/v1/analyses
  *
  * 请求体示例：
  * {
- *   "file_id": "file-123",
+ *   "dataset_id": "ds_123",
  *   "question": "不同肥料组的产量是否存在显著差异？"
  * }
  *
@@ -106,9 +146,9 @@ export async function getDatasetProfile(fileId) {
  *   "plan": [...]
  * }
  */
-export async function createAnalysisTask(fileId, question) {
-  const response = await apiClient.post("/analysis", {
-    file_id: fileId,
+export async function createAnalysisTask(datasetId, question) {
+  const response = await apiClient.post("/analyses", {
+    dataset_id: datasetId,
     question: question.trim(),
   });
 
@@ -139,17 +179,20 @@ export async function getTaskStatus(taskId) {
 /*
  * 获取分析任务的最终结果。
  *
- * GET /api/tasks/{task_id}/result
- *
- * 当前 ResultPage 可以直接从任务状态响应中的 result 读取结果；
- * 此函数保留给后端将“状态接口”和“结果接口”分离时使用。
+ * GET /api/v1/analyses/{task_id}/result
  */
-export async function getAnalysisResult(taskId) {
-  const response = await apiClient.get(
-    `/tasks/${encodeURIComponent(taskId)}/result`
-  );
+export async function getAnalysisResult(taskId, resultUrl) {
+  const fallbackUrl = `/analyses/${encodeURIComponent(taskId)}/result`;
+  const requestUrl = normalizeRequestUrl(resultUrl, fallbackUrl);
+  const response = await apiClient.get(requestUrl);
 
-  return response.data;
+  const result = response.data;
+  result.figures = (result.figures ?? []).map((figure) => ({
+    ...figure,
+    url: resolveApiUrl(figure.url),
+  }));
+
+  return result;
 }
 
 /*
@@ -159,8 +202,8 @@ export async function getAnalysisResult(taskId) {
  * 如果没有，则使用默认报告接口。
  */
 export async function downloadReport(taskId, reportUrl) {
-  const defaultUrl = `/tasks/${encodeURIComponent(taskId)}/report`;
-  const requestUrl = reportUrl || defaultUrl;
+  const defaultUrl = `/reports/${encodeURIComponent(taskId)}/download`;
+  const requestUrl = normalizeRequestUrl(reportUrl, defaultUrl);
 
   const response = await apiClient.get(requestUrl, {
     responseType: "blob",
