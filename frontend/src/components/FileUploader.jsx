@@ -81,16 +81,22 @@ function FileUploader({ onUploadSuccess }) {
       setError("");
 
       const data = await uploadDataset(selectedFile);
-      const fileId = data.file_id ?? data.id;
+      const datasetId = data.dataset_id;
 
-      if (!fileId) {
-        throw new Error("后端未返回 file_id。");
+      if (!datasetId) {
+        throw new Error("后端未返回 dataset_id。");
       }
 
-      onUploadSuccess(fileId);
+      onUploadSuccess(datasetId);
     } catch (requestError) {
+      const responseDetail = requestError.response?.data?.detail;
+      const uploadError =
+        requestError.response?.status === 404 && responseDetail === "Not Found"
+          ? "上传接口不存在。请确认 VITE_API_BASE_URL 以 /api/v1 结尾，并重启前端服务。"
+          : responseDetail;
+
       setError(
-        requestError.response?.data?.detail ??
+        uploadError ??
           requestError.message ??
           "文件上传失败，请稍后重试。"
       );
