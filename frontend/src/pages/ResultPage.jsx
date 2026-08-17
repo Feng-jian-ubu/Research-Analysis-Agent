@@ -3,9 +3,7 @@ import { useParams } from "react-router-dom";
 import Header from "../components/layout/Header.jsx";
 import StepIndicator from "../components/layout/StepIndicator.jsx";
 import AnalysisProgress from "../components/AnalysisProgress.jsx";
-import ResultTable from "../components/ResultTable.jsx";
-import ChartViewer from "../components/ChartViewer.jsx";
-import ReportDownload from "../components/ReportDownload.jsx";
+import AnalysisResult from "../components/AnalysisResult.jsx";
 import useTaskPolling from "../hooks/useTaskPolling.js";
 
 function ResultPage() {
@@ -45,7 +43,10 @@ function ResultPage() {
   const status = task?.status ?? "pending";
   const isCompleted = status === "completed";
   const isFailed = status === "failed";
-  const result = task?.result ?? {};
+  const failureMessage =
+    typeof task?.error === "string"
+      ? task.error
+      : task?.error?.message;
 
   return (
     <div className="app">
@@ -74,39 +75,15 @@ function ResultPage() {
         {isFailed && (
           <section className="error-panel">
             <h2>分析任务执行失败</h2>
-            <p>{task?.error ?? "任务执行过程中出现错误，请重新创建任务。"}</p>
+            <p>{failureMessage ?? "任务执行过程中出现错误，请重新创建任务。"}</p>
           </section>
         )}
 
         {isCompleted && (
-          <section className="result-content">
-            {result.summary && (
-              <article className="result-summary">
-                <h2>分析结论</h2>
-                <p>{result.summary}</p>
-              </article>
-            )}
-
-            {result.tables?.map((table, index) => (
-              <ResultTable
-                key={table.id ?? `table-${index}`}
-                title={table.title}
-                columns={table.columns}
-                rows={table.rows}
-              />
-            ))}
-
-            {result.charts?.length > 0 && (
-              <ChartViewer charts={result.charts} />
-            )}
-
-            {result.report_url && (
-              <ReportDownload
-                taskId={taskId}
-                reportUrl={result.report_url}
-              />
-            )}
-          </section>
+          <AnalysisResult
+            taskId={taskId}
+            resultUrl={task?.result_url}
+          />
         )}
       </main>
     </div>
