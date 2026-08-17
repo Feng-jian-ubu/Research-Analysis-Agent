@@ -30,10 +30,7 @@ function AnalysisPage() {
       setIsSubmitting(true);
       setError("");
 
-      const data = await createAnalysisTask({
-        fileId,
-        question: trimmedQuestion,
-      });
+      const data = await createAnalysisTask(fileId, trimmedQuestion);
 
       setPlan(data.plan ?? []);
 
@@ -43,6 +40,7 @@ function AnalysisPage() {
     } catch (requestError) {
       setError(
         requestError.response?.data?.detail ??
+          requestError.message ??
           "创建分析任务失败，请稍后重试。"
       );
     } finally {
