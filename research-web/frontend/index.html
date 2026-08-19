@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>科研数据分析平台</title>
+<link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container">
+    <div class="logo">
+      <span class="logo-icon">📊</span>
+      <span class="logo-text">科研数据分析平台</span>
+    </div>
+    <nav class="nav-links">
+      <a href="#upload" class="active">上传数据</a>
+      <a href="#history" id="nav-history">历史记录</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Upload -->
+  <section id="upload" class="section-card upload-section">
+    <h2 class="section-title">📤 上传数据文件</h2>
+    <p class="section-desc">支持 CSV、Excel（.xlsx / .xls）格式，最大 200 MB</p>
+
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-content" id="dropContent">
+        <div class="drop-icon">📂</div>
+        <p class="drop-text">拖拽文件到此处，或 <span class="link">点击选择文件</span></p>
+        <p class="drop-hint">支持 .csv .xlsx .xls</p>
+      </div>
+      <div class="file-info hidden" id="fileInfo">
+        <div class="file-icon">📄</div>
+        <div class="file-details">
+          <span class="file-name" id="fileName"></span>
+          <span class="file-size" id="fileSize"></span>
+        </div>
+        <button class="btn-text" id="removeFile">✕</button>
+      </div>
+      <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" hidden>
+    </div>
+
+    <div class="progress-bar hidden" id="uploadProgress">
+      <div class="progress-fill" id="uploadProgressFill"></div>
+    </div>
+
+    <div class="upload-actions">
+      <button class="btn btn-primary" id="btnUpload" disabled>开始上传</button>
+    </div>
+  </section>
+
+  <!-- Config -->
+  <section class="section-card config-section hidden" id="configSection">
+    <h2 class="section-title">⚙️ 分析配置</h2>
+    <p class="section-desc">设置分析参数（可留空让系统自动推荐）</p>
+
+    <!-- 数据预览 -->
+    <div class="preview-section hidden" id="dataPreview">
+      <div class="placeholder">⏳ 加载数据预览…</div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="methodSelect">分析方法</label>
+        <select id="methodSelect">
+          <option value="">— 自动推荐 —</option>
+          <option value="ttest">独立样本 t 检验</option>
+          <option value="mannwhitney">Mann-Whitney U 检验</option>
+          <option value="anova">单因素 ANOVA</option>
+          <option value="kruskal">Kruskal-Wallis 检验</option>
+          <option value="regression">线性回归</option>
+          <option value="logistic">逻辑回归</option>
+          <option value="chi2">卡方检验</option>
+          <option value="correlation">相关性分析</option>
+          <option value="describe">描述统计</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="yVar">目标变量 Y</label>
+        <select id="yVar">
+          <option value="">— 自动检测 —</option>
+        </select>
+      </div>
+      <div class="form-group full-width">
+        <label>自变量 X（勾选多个）</label>
+        <div class="x-checkbox-grid" id="xVarContainer">
+          <span class="placeholder" style="display:inline;padding:0;font-size:13px;">上传文件后自动加载列名</span>
+        </div>
+        <input type="hidden" id="xVar" value="">
+      </div>
+    </div>
+
+    <div class="upload-actions">
+      <button class="btn btn-primary" id="btnAnalyze">🚀 开始分析</button>
+    </div>
+  </section>
+
+  <!-- Progress -->
+  <section class="section-card progress-section hidden" id="progressSection">
+    <h2 class="section-title">⏳ 分析进度</h2>
+
+    <div class="steps-timeline" id="stepsTimeline">
+      <div class="step" data-step="uploaded"><div class="step-dot">✓</div><span>已上传</span></div>
+      <div class="step" data-step="loading"><div class="step-dot">2</div><span>数据加载</span></div>
+      <div class="step" data-step="cleaning"><div class="step-dot">3</div><span>数据清洗</span></div>
+      <div class="step" data-step="analyzing"><div class="step-dot">4</div><span>统计分析</span></div>
+      <div class="step" data-step="figures"><div class="step-dot">5</div><span>生成图表</span></div>
+      <div class="step" data-step="report"><div class="step-dot">6</div><span>生成报告</span></div>
+      <div class="step" data-step="completed"><div class="step-dot">✓</div><span>完成</span></div>
+    </div>
+
+    <div class="progress-status" id="progressStatus">准备中…</div>
+    <div class="progress-bar"><div class="progress-fill" id="pipelineProgressFill"></div></div>
+  </section>
+
+  <!-- Results -->
+  <section class="section-card result-section hidden" id="resultSection">
+    <h2 class="section-title">📋 分析结果</h2>
+
+    <div class="result-tabs">
+      <button class="tab active" data-tab="preview">📄 报告预览</button>
+      <button class="tab" data-tab="figures">📈 图表</button>
+      <button class="tab" data-tab="downloads">📥 下载</button>
+    </div>
+
+    <div class="tab-content active" id="tabPreview">
+      <div class="report-preview" id="reportPreview"><div class="placeholder">分析完成后，报告将在此处预览</div></div>
+    </div>
+
+    <div class="tab-content hidden" id="tabFigures">
+      <div class="figures-grid" id="figuresGrid"><div class="placeholder">分析完成后，图表将在此处展示</div></div>
+    </div>
+
+    <div class="tab-content hidden" id="tabDownloads">
+      <div class="download-list" id="downloadList"><div class="placeholder">分析完成后，可下载的文件将在此处列出</div></div>
+    </div>
+  </section>
+
+  <!-- History -->
+  <section class="section-card history-section hidden" id="historySection">
+    <h2 class="section-title">📜 历史记录</h2>
+    <div id="historyList"><div class="placeholder">暂无历史记录</div></div>
+  </section>
+
+</main>
+
+<footer class="footer"><div class="container"><p>科研数据分析平台 · Powered by OpenClaw</p></div></footer>
+
+<script src="js/config.js"></script>
+<script src="js/upload.js"></script>
+<script src="js/analysis.js"></script>
+<script src="js/results.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
