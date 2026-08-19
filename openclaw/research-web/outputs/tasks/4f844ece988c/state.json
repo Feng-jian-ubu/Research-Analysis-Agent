@@ -1,0 +1,78 @@
+{
+  "task_id": "4f844ece988c",
+  "status": "completed",
+  "progress": 100,
+  "step": "completed",
+  "message": "✅ 分析完成！",
+  "original_filename": "linear_regression_test_dataset.xlsx",
+  "created_at": 1787135113.0445027,
+  "updated_at": 1787135126.1543953,
+  "step_data": {
+    "files": [
+      {
+        "name": "anomalies.csv",
+        "size": 712
+      },
+      {
+        "name": "figures/linear_regression_test_dataset_cleaned_final_figure_bar_grouped.html",
+        "size": 11390
+      },
+      {
+        "name": "figures/linear_regression_test_dataset_cleaned_final_figure_box.html",
+        "size": 12170
+      },
+      {
+        "name": "figures/linear_regression_test_dataset_cleaned_final_figure_heatmap.html",
+        "size": 9579
+      },
+      {
+        "name": "figures/linear_regression_test_dataset_cleaned_final_figure_histogram.html",
+        "size": 13766
+      },
+      {
+        "name": "figures/linear_regression_test_dataset_cleaned_final_figure_pie.html",
+        "size": 7986
+      },
+      {
+        "name": "figures/linear_regression_test_dataset_cleaned_final_figure_qq.html",
+        "size": 13638
+      },
+      {
+        "name": "figures/linear_regression_test_dataset_cleaned_final_figure_residual.html",
+        "size": 12836
+      },
+      {
+        "name": "figures/linear_regression_test_dataset_cleaned_final_figure_scatter_reg.html",
+        "size": 14580
+      },
+      {
+        "name": "figures/linear_regression_test_dataset_cleaned_final_figure_violin.html",
+        "size": 9416
+      },
+      {
+        "name": "linear_regression_test_dataset.xlsx",
+        "size": 10522
+      },
+      {
+        "name": "linear_regression_test_dataset_cleaned.csv",
+        "size": 3237
+      },
+      {
+        "name": "linear_regression_test_dataset_cleaned_final.csv",
+        "size": 3237
+      },
+      {
+        "name": "linear_regression_test_dataset_cleaned_final_result.json",
+        "size": 1563
+      },
+      {
+        "name": "linear_regression_test_dataset_cleaned_final_result_summary.md",
+        "size": 1062
+      },
+      {
+        "name": "reports/report.md",
+        "size": 3982
+      }
+    ]
+  }
+}
