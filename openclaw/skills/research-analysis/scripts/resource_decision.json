@@ -1,0 +1,65 @@
+{
+  "recommendation": "hpc",
+  "reason": "数据行数 120000 > 50000; 分类列 'age' 有 63 个类别，哑变量展开后维度剧增",
+  "details": {
+    "n_rows": 120000,
+    "n_cols": 12,
+    "file_size_mb": 15.73,
+    "n_features": 11,
+    "n_cat_features": 6,
+    "n_num_features": 5,
+    "method": "regression",
+    "y_col": "health_score",
+    "x_vars": [
+      "age",
+      "height",
+      "weight",
+      "exercise_hours",
+      "sleep_hours",
+      "income",
+      "education",
+      "region",
+      "occupation",
+      "married",
+      "smoker"
+    ],
+    "type_map": {
+      "age": "categorical",
+      "height": "numeric",
+      "weight": "numeric",
+      "exercise_hours": "numeric",
+      "sleep_hours": "numeric",
+      "income": "numeric",
+      "education": "categorical",
+      "region": "categorical",
+      "occupation": "categorical",
+      "married": "categorical",
+      "smoker": "categorical",
+      "health_score": "numeric"
+    },
+    "hpc_reasons": [
+      "数据行数 120000 > 50000",
+      "分类列 'age' 有 63 个类别，哑变量展开后维度剧增"
+    ],
+    "local_reasons": []
+  },
+  "pipeline": {
+    "data_csv": "/tmp/health_survey_final.csv",
+    "method": "regression",
+    "y_col": "health_score",
+    "x_vars": [
+      "age",
+      "height",
+      "weight",
+      "exercise_hours",
+      "sleep_hours",
+      "income",
+      "education",
+      "region",
+      "occupation",
+      "married",
+      "smoker"
+    ],
+    "output_prefix": "health_survey_final_result"
+  }
+}

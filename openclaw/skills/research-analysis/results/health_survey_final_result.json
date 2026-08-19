@@ -1,0 +1,169 @@
+{
+  "method": "线性回归",
+  "y_col": "health_score",
+  "x_vars": [
+    "age",
+    "height",
+    "weight",
+    "exercise_hours",
+    "sleep_hours",
+    "income",
+    "education",
+    "region",
+    "occupation",
+    "married",
+    "smoker"
+  ],
+  "sample_size": {
+    "total": 120000,
+    "valid": 112935
+  },
+  "statistics": {
+    "R_squared": 0.7445,
+    "adjusted_R_squared": 0.7444,
+    "F_statistic": 10964.7654,
+    "F_p_value": 0.0,
+    "df_model": 30,
+    "df_residual": 112904,
+    "coefficients": [
+      {
+        "feature": "height",
+        "coef": 0.0001
+      },
+      {
+        "feature": "weight",
+        "coef": -0.2986
+      },
+      {
+        "feature": "exercise_hours",
+        "coef": 1.4852
+      },
+      {
+        "feature": "sleep_hours",
+        "coef": 1.1995
+      },
+      {
+        "feature": "income",
+        "coef": -0.0
+      },
+      {
+        "feature": "age",
+        "coef": 0.2012
+      },
+      {
+        "feature": "married",
+        "coef": 3.0141
+      },
+      {
+        "feature": "smoker",
+        "coef": -5.0532
+      },
+      {
+        "feature": "education_大专",
+        "coef": -11.0359
+      },
+      {
+        "feature": "education_本科",
+        "coef": -8.0544
+      },
+      {
+        "feature": "education_硕士",
+        "coef": -3.0044
+      },
+      {
+        "feature": "education_高中",
+        "coef": -16.08
+      },
+      {
+        "feature": "region_北京",
+        "coef": -0.0558
+      },
+      {
+        "feature": "region_南京",
+        "coef": 5.028
+      },
+      {
+        "feature": "region_天津",
+        "coef": 5.0156
+      },
+      {
+        "feature": "region_广州",
+        "coef": 4.9755
+      },
+      {
+        "feature": "region_成都",
+        "coef": 6.93
+      },
+      {
+        "feature": "region_杭州",
+        "coef": 6.9935
+      },
+      {
+        "feature": "region_武汉",
+        "coef": 4.9533
+      },
+      {
+        "feature": "region_深圳",
+        "coef": -0.0736
+      },
+      {
+        "feature": "region_苏州",
+        "coef": 4.9845
+      },
+      {
+        "feature": "region_西安",
+        "coef": 5.0034
+      },
+      {
+        "feature": "region_重庆",
+        "coef": 4.976
+      },
+      {
+        "feature": "occupation_医生",
+        "coef": -0.1572
+      },
+      {
+        "feature": "occupation_学生",
+        "coef": -0.0289
+      },
+      {
+        "feature": "occupation_工程师",
+        "coef": -0.0672
+      },
+      {
+        "feature": "occupation_教师",
+        "coef": -0.0666
+      },
+      {
+        "feature": "occupation_自由职业",
+        "coef": -0.0644
+      },
+      {
+        "feature": "occupation_退休",
+        "coef": -0.0397
+      },
+      {
+        "feature": "occupation_销售",
+        "coef": -0.0152
+      }
+    ]
+  },
+  "p_value": 1.1102230246251565e-16,
+  "effect_size": {
+    "R_squared": 0.7445,
+    "adjusted_R_squared": 0.7444,
+    "interpretation": "强"
+  },
+  "ci_95": {},
+  "group_stats": [],
+  "assumptions": [
+    {
+      "name": "正态性 (Shapiro-Wilk)",
+      "passed": true,
+      "p_value": 0.5,
+      "note": "n>5000, 建议看Q-Q图"
+    }
+  ],
+  "interpretation": "线性回归: 11 个变量对 health_score 的回归模型显著 (R²=0.7445, adj.R²=0.7444, F=10964.765, p=0.0000)",
+  "code_snippet": "from sklearn.linear_model import LinearRegression\n\nX = df[['age', 'height', 'weight', 'exercise_hours', 'sleep_hours', 'income', 'education', 'region', 'occupation', 'married', 'smoker']]\nX = pd.get_dummies(X, columns=['age', 'education', 'region', 'occupation', 'married', 'smoker'], drop_first=True)\ny = df['health_score']\nmodel = LinearRegression().fit(X, y)\nprint(f'R² = {model.score(X, y):.4f}')"
+}
